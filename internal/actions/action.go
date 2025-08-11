@@ -15,6 +15,7 @@ type Action struct {
 	apptype   string      // The application type for the action.
 	namespace string      // The namespace in which the action operates.
 	tail      string      // The tail parameter for the action.
+	follow    bool        // The follow parameter for the action.
 	runAction ActionFunc  // The function to execute the action.
 }
 
@@ -61,10 +62,10 @@ func (act *Action) GetName() string {
 // Returns:
 //   string - The trimmed subcommand.
 func trimSubCmd(subcmd string) string {
-	if subcmd[0] == '-' {
-		return subcmd[1:]
-	} else if subcmd[0:2] == "--" {
+    if subcmd[0:2] == "--" {
 		return subcmd[2:]
+	} else if subcmd[0] == '-' {
+		return subcmd[1:]
 	}
 	return subcmd
 }
@@ -94,6 +95,8 @@ func splitSubCmd(args []string) []string {
 // Returns:
 //   error - An error if the initialization fails due to missing parameters.
 func (act *Action) Init(args []string) error {
+    act.follow = true
+    act.tag    = ""
 	args = splitSubCmd(args)
 	if len(args)%2 > 0 {
 		return fmt.Errorf("Missing second parameter")
@@ -108,6 +111,8 @@ func (act *Action) Init(args []string) error {
 			act.apptype = args[i+1]
 		case "tail":
 			act.tail = args[i+1]
+		case "follow":
+            act.follow = !(args[i+1] == "0" || args[i+1] == "no" || args[i+1] == "false")
 		}
 	}
 	return nil

@@ -22,12 +22,14 @@ import (
 // Parameters:
 //   name - A string representing the name of the container whose logs are to be retrieved.
 //   tail - A string specifying the number of lines to tail from the logs.
+//   follow - A boolean indicating whether to follow the log stream.
+//   tag - A string representing a tag to be applied to the log lines.
 //
 // Behavior:
 //   - Resolves the container ID using the GetCID function based on the provided container name.
 //   - Passes the container ID and tail parameter to the getContainerLogs function for log retrieval and processing.
-func GetLog(name, tail string) {
-    getContainerLogs(GetCID(name), tail)
+func GetLog(name, tail string, follow bool, tag string) {
+    getContainerLogs(GetCID(name), tail, follow, tag)
 }
 
 // GetCID retrieves the container ID for a given container name.
@@ -70,6 +72,8 @@ func GetLog(name, tail string) {
 // Parameters:
 //   cid - A string representing the container ID whose logs are to be retrieved.
 //   tail - A string specifying the number of lines to tail from the logs.
+//   follow - A boolean indicating whether to follow the log stream.
+//   tag - A string representing a tag to be applied to the log lines.
 //
 // Behavior:
 //   - Creates a Moby client to interact with the container runtime.
@@ -78,7 +82,7 @@ func GetLog(name, tail string) {
 //   - Processes the log stream by reading headers and data chunks.
 //   - Extracts and formats log lines using the SetLabels function.
 //   - Handles errors during log retrieval and processing, terminating the program if necessary.
-func getContainerLogs(cid, tail string) {
+func getContainerLogs(cid, tail string, follow bool, tag string) {
     cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
     if err != nil {
         panic(err)
@@ -90,7 +94,7 @@ func getContainerLogs(cid, tail string) {
         Since:      "",
         Until:      "",
         Timestamps: true,
-        Follow:     true,
+        Follow:     follow,
         Tail:       tail,
         Details:    false,
     }
@@ -123,7 +127,7 @@ func getContainerLogs(cid, tail string) {
         // time, line, found
         _, line, found := strings.Cut(string(dat), " ")
         if found {
-            fmt.Print(cmdln.SetLabels(line))
+            fmt.Print(cmdln.SetLabels(line, tag))
         }
     }
 }

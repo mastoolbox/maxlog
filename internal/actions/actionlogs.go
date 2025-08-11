@@ -35,6 +35,9 @@ func ActionLogs() *Action {
 //   - Logs a fatal error if MAXLOG_MODE is not set or contains an invalid value.
 func runLogs(act *Action) {
     tail := getEnv("MAXLOG_TAIL", "40")
+    if act.tail != "" {
+        tail = act.tail
+    }
 
     if os.Getenv("MAXLOG_MODE") == "k8s" {
         selector := os.Getenv("MAXLOG_K8S_APPTYPE")
@@ -48,13 +51,13 @@ func runLogs(act *Action) {
         if namespace == "" || selector == "" {
             cmdln.Fatal("Please set MAXLOG_K8S_NAMESPACE and MAXLOG_K8S_APPTYPE environment variables.", nil)
         }
-        k8s.GetLog(tail)
+        k8s.GetLog(tail, act.follow, act.tag)
     } else if os.Getenv("MAXLOG_MODE") == "pod" {
         container := os.Getenv("MAXLOG_CONTAINER")
         if container == "" {
             cmdln.Fatal("Container name is not set. Please set MAXLOG_CONTAINER environment variable.", nil)
         }
-        moby.GetLog(container, tail)
+        moby.GetLog(container, tail, act.follow, act.tag)
     } else {
         cmdln.Fatal("Unknown MAXLOG_MODE. Please set it to 'k8s' or 'pod'.", nil)
     }

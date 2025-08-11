@@ -77,17 +77,19 @@ func GetPods() (*corev1.PodList, error) {
 //
 // Parameter:
 //   tail - A string representing the number of lines to tail from the logs.
+//   follow - A boolean indicating whether to follow the log stream.
+//   tag - A string representing a tag to be applied to the log lines.
 //
 // Behavior:
 //   - Fetches the list of pods using the GetPods function.
 //   - Handles errors that occur during pod retrieval by terminating the program.
 //   - Passes the retrieved pods and tail parameter to the getPodLogs function for log processing.
-func GetLog(tail string) {
+func GetLog(tail string, follow bool, tag string) {
     pods, err := GetPods()
     if err != nil {
         cmdln.Fatal("Error getting pods:", err)
     }
-    getPodLogs(pods, tail)
+    getPodLogs(pods, tail, follow, tag)
 }
 
 // getPodLogs retrieves and processes logs for a list of Kubernetes pods.
@@ -95,6 +97,8 @@ func GetLog(tail string) {
 // Parameters:
 //   pods - A pointer to a corev1.PodList containing the pods to retrieve logs from.
 //   tail - A string representing the number of lines to tail from the logs.
+//   follow - A boolean indicating whether to follow the log stream.
+//   tag - A string representing a tag to be applied to the log lines.
 //
 // Behavior:
 //   - Parses the `tail` parameter into an integer value.
@@ -102,14 +106,14 @@ func GetLog(tail string) {
 //   - Iterates through the list of pods and retrieves their logs using the Kubernetes client.
 //   - Starts a goroutine for each pod to process its logs using the `writeLogs` function.
 //   - Waits for all log processing goroutines to complete before returning.
-func getPodLogs(pods *corev1.PodList, tail string) {
+func getPodLogs(pods *corev1.PodList, tail string, follow bool, tag string) {
     tailnum, err := strconv.ParseInt(tail, 10, 64)
     if err != nil {
         cmdln.Fatal("Error parsing tail number:", err)
     }
 
     podLogOpts := corev1.PodLogOptions{
-        Follow:    true,
+        Follow:    follow,
         TailLines: &tailnum,
         Container: os.Getenv("MAXLOG_K8S_APPTYPE"),
     }
@@ -122,7 +126,7 @@ func getPodLogs(pods *corev1.PodList, tail string) {
         if err != nil {
             cmdln.Fatal("Error getting pod logs:", err)
         }
-        go writeLogs(bufio.NewReader(podLogs), ch)
+        go writeLogs(bufio.NewReader(podLogs), ch, tag)
     }
 
     <-ch
@@ -133,13 +137,14 @@ func getPodLogs(pods *corev1.PodList, tail string) {
 // Parameters:
 //   buffer - A pointer to a bufio.Reader that provides the log lines to read.
 //   ch - A channel used to signal when the log processing is complete.
+//   tag - A string representing a tag to be applied to the log lines.
 //
 // Behavior:
 //   - Continuously reads lines from the buffer until EOF is reached.
 //   - Each line is processed using the SetLabels function to apply formatting.
 //   - Outputs the formatted log lines to the standard output.
 //   - Signals completion by sending a value to the provided channel.
-func writeLogs(buffer *bufio.Reader, ch chan bool) {
+func writeLogs(buffer *bufio.Reader, ch chan bool, tag string) {
     defer func() { ch <- true }()
 
     for {
@@ -147,6 +152,6 @@ func writeLogs(buffer *bufio.Reader, ch chan bool) {
         if err == io.EOF {
             break
         }
-        fmt.Print(cmdln.SetLabels(line))
+        fmt.Print(cmdln.SetLabels(line, tag))
     }
 }

@@ -79,6 +79,7 @@ func Fatal(msg string, err error) {
 //
 // Parameters:
 //   text - The input string to process.
+//   tag  - An optional tag to highlight in the text.
 //
 // Returns:
 //   string - The processed text with color-coded labels applied.
@@ -90,7 +91,7 @@ func Fatal(msg string, err error) {
 //     - labelFunc: The function used to apply the color-coded label.
 //   - Applies the corresponding label function to replace substrings in the text.
 //   - If the text contains "CID-CRON" or "BMXAA6372I", applies subdued formatting using the Downplay function.
-func SetLabels(text string) string {
+func SetLabels(text, tag string) string {
 
     replacements := []struct {
         oldKey string
@@ -117,6 +118,11 @@ func SetLabels(text string) string {
 
     if strings.Contains(text, "CID-CRON") || strings.Contains(text, " BMXAA6372I") {
         text = Downplay(text)
+    }
+
+    if tag != "" && strings.Contains(text, tag)  && text[0] != '\t' {
+        text = Highlight(text)
+        text = SetGreenLabel(text, tag, tag)
     }
 
     return text
@@ -227,7 +233,28 @@ func SetGreenLabel(text, oldKey, newKey string) string {
 //   - Replaces the first occurrence of " [" in the text with a dark gray color-coded version.
 //   - Appends a reset sequence to ensure proper formatting.
 func Downplay(text string) (string) {
-    return strings.Replace(text, " [", DarkGray + " [" , 1) + Reset
+    if strings.Contains(text, " [") {
+        return strings.Replace(text, " [", DarkGray + " [" , 1) + Reset
+     }
+     return text
+}
+
+// Highlight applies a white color-coded formatting to specific substrings in the input text.
+//
+// Parameter:
+//   text - The input string to process.
+//
+// Returns:
+//   string - The processed text with white color-coded formatting.
+//
+// Behavior:
+//   - Replaces the first occurrence of " [" in the text with a white color-coded version.
+//   - Appends a reset sequence to ensure proper formatting.
+func Highlight(text string) (string) {
+    if strings.Contains(text, " [") {
+        return strings.Replace(text, " [", White + " [" , 1) + Reset
+    }
+    return text
 }
 
 

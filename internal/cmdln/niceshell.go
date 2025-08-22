@@ -35,6 +35,7 @@ const (
     BGMagenta    = "\033[45m"
     BGCyan       = "\033[46m"
     BGLightGray  = "\033[47m"
+    BGLightBlue  = "\033[104m"
 )
 
 const SymError = 0
@@ -108,7 +109,10 @@ func SetLabels(text, tag string) string {
         {"[ERROR   ]", "ERROR", SetRedLabel},
         {"[err]", "ERROR", SetRedLabel},
         {"[MXServer]", "MX", SetMagentaLabel},
+        {"[MAXIMO_UI]", "UI", SetMagentaLabel},
         {"[maximo]", "MAX", SetCyanLabel},
+        {"[DEBUG]", "DEBUG", SetCyanLabel},
+        {"[maximo.script." + tag +"]", tag, SetLightBlueLabel},
         {"Maximo is ready for client connections.", "Maximo is ready for client connections.", SetGreenLabel},
     }
 
@@ -167,6 +171,19 @@ func SetYellowLabel(text, oldKey, newKey string) string {
 //   string - The processed text with the blue label.
 func SetBlueLabel(text, oldKey, newKey string) string {
     return SetLabel(text, oldKey, newKey, Blue, BGBlue)
+}
+
+// SetLightBlueLabel applies a light blue color-coded label to a specific substring in the input text.
+//
+// Parameters:
+//   text    - The input string to process.
+//   oldKey  - The substring to be replaced.
+//   newKey  - The replacement text to insert.
+//
+// Returns:
+//   string - The processed text with the blue label.
+func SetLightBlueLabel(text, oldKey, newKey string) string {
+    return SetLabel(text, oldKey, newKey, LightBlue, BGLightBlue)
 }
 
 // SetRedLabel applies a red color-coded label to a specific substring in the input text.

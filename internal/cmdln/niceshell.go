@@ -112,7 +112,7 @@ func SetLabels(text, tag string) string {
         {"[MAXIMO_UI]", "UI", SetMagentaLabel},
         {"[maximo]", "MAX", SetCyanLabel},
         {"[DEBUG]", "DEBUG", SetCyanLabel},
-        {"[maximo.script." + tag +"]", tag, SetLightBlueLabel},
+        {"[maximo.script." + tag +"]", "Script", SetLightBlueLabel},
         {"Maximo is ready for client connections.", "Maximo is ready for client connections.", SetGreenLabel},
     }
 

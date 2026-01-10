@@ -72,7 +72,7 @@ func GetNSPods() typedv1.PodInterface {
 //   - Returns the list of pods and any error encountered during retrieval.
 func GetPods() (*corev1.PodList, error) {
 	listOptions := metav1.ListOptions{
-		LabelSelector: "mas.ibm.com/appTypeName in (" + os.Getenv("MAXLOG_K8S_APPTYPE") + ")",
+		LabelSelector: cmdln.AppTypeName + " in (" + cmdln.GetEnv("MAXLOG_K8S_APPTYPE", cmdln.DefaultLabels) + ")",
 	}
 	return GetNSPods().List(context.TODO(), listOptions)
 }
@@ -121,13 +121,14 @@ func getPodLogs(pods *corev1.PodList, tail string, follow bool, tag string) {
 	podLogOpts := corev1.PodLogOptions{
 		Follow:    follow,
 		TailLines: &tailnum,
-		Container: os.Getenv("MAXLOG_K8S_APPTYPE"),
+		Container: "",
 	}
 
 	ctx := context.TODO()
 	ch := make(chan bool)
 
 	for _, pod := range pods.Items {
+		podLogOpts.Container = pod.Labels[cmdln.AppTypeName]
 		podLogs, err := GetNSPods().GetLogs(pod.Name, &podLogOpts).Stream(ctx)
 		if err != nil {
 			cmdln.Fatal("Error getting pod logs:", err)

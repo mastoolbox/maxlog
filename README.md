@@ -39,8 +39,8 @@ maxlog logs --tag=mytag --tail=100
   Number of log lines to display (default: 40)
 - `MAXLOG_K8S_NAMESPACE`  
   Namespace for Kubernetes logs
-- `MAXLOG_K8S_APPTYPE`  
-  Selector for Kubernetes logs
+- `MAXLOG_K8S_APPTYPE` - optional  
+  This is the pod selector for Kubernetes logs. The default value is `all`, `ui`, `cron`, `mea`, `rpt`, `jms`. This is only required in k8s mode.
 - `MAXLOG_CONTAINER`  
   Container name in Podman mode
 - `MAXLOG_USE_NERDFONT` - optional  

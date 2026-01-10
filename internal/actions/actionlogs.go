@@ -43,7 +43,7 @@ func runLogs(act *Action) {
 	}
 
 	if os.Getenv("MAXLOG_MODE") == "k8s" {
-		selector := os.Getenv("MAXLOG_K8S_APPTYPE")
+		selector := cmdln.GetEnv("MAXLOG_K8S_APPTYPE", cmdln.DefaultLabels)
 		namespace := os.Getenv("MAXLOG_K8S_NAMESPACE")
 		/* tag := ""
 		   if len(os.Args) > 3 {
@@ -52,7 +52,7 @@ func runLogs(act *Action) {
 		       }
 		   } */
 		if namespace == "" || selector == "" {
-			cmdln.Fatal("Please set MAXLOG_K8S_NAMESPACE and MAXLOG_K8S_APPTYPE environment variables.", nil)
+			cmdln.Fatal("Please set MAXLOG_K8S_NAMESPACE environment variables.", nil)
 		}
 		k8s.GetLog(tail, act.follow, act.tag)
 	} else if os.Getenv("MAXLOG_MODE") == "pod" {

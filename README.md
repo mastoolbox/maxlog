@@ -43,6 +43,19 @@ maxlog logs --tag=mytag --tail=100
   Selector for Kubernetes logs
 - `MAXLOG_CONTAINER`  
   Container name in Podman mode
+- `MAXLOG_USE_NERDFONT` - optional  
+  With the values `1` or `true`, symbols can be activated via a NerdFont (see [Nerd Fonts](https://www.nerdfonts.com/)).  This option is disabled by default.
+
+### Configuration file example
+
+```bash
+#!/usr/bin/env bash
+export MAXLOG_MODE="k8s"
+export MAXLOG_TAIL="100"
+export MAXLOG_K8S_NAMESPACE="mas-demo-manage"
+export MAXLOG_K8S_APPTYPE="all"
+export MAXLOG_USE_NERDFONT="true"
+``` 
 
 ## License
 

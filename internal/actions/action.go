@@ -3,6 +3,8 @@ package actions
 import (
 	"fmt"
 	"strings"
+
+	"github.com/maxtoolbox/maxlog/internal/cmdln"
 )
 
 // ActionFunc defines a function type that operates on an Action instance.
@@ -10,13 +12,14 @@ type ActionFunc func(*Action)
 
 // Action represents an action with various attributes and a function to execute.
 type Action struct {
-	name      string      // The name of the action.
-	tag       string      // The tag associated with the action.
-	apptype   string      // The application type for the action.
-	namespace string      // The namespace in which the action operates.
-	tail      string      // The tail parameter for the action.
-	follow    bool        // The follow parameter for the action.
-	runAction ActionFunc  // The function to execute the action.
+	name      string     // The name of the action.
+	tag       string     // The tag associated with the action.
+	apptype   string     // The application type for the action.
+	namespace string     // The namespace in which the action operates.
+	tail      string     // The tail parameter for the action.
+	follow    bool       // The follow parameter for the action.
+	focus     string     // The focus parameter for the action.
+	runAction ActionFunc // The function to execute the action.
 }
 
 // ActionRunner defines an interface for initializing and running actions.
@@ -44,25 +47,30 @@ type ActionRunner interface {
 
 // SetName sets the name of the Action.
 // Parameters:
-//   name - A string representing the name to be assigned to the Action.
+//
+//	name - A string representing the name to be assigned to the Action.
 func (act *Action) SetName(name string) {
 	act.name = name
 }
 
 // GetName retrieves the name of the Action.
 // Returns:
-//   string - The name of the Action.
+//
+//	string - The name of the Action.
 func (act *Action) GetName() string {
 	return act.name
 }
 
 // trimSubCmd trims the leading dashes from a subcommand.
 // Parameters:
-//   subcmd - A string representing the subcommand to be trimmed.
+//
+//	subcmd - A string representing the subcommand to be trimmed.
+//
 // Returns:
-//   string - The trimmed subcommand.
+//
+//	string - The trimmed subcommand.
 func trimSubCmd(subcmd string) string {
-    if subcmd[0:2] == "--" {
+	if subcmd[0:2] == "--" {
 		return subcmd[2:]
 	} else if subcmd[0] == '-' {
 		return subcmd[1:]
@@ -72,9 +80,12 @@ func trimSubCmd(subcmd string) string {
 
 // splitSubCmd splits arguments into subcommands and their values.
 // Parameters:
-//   args - A slice of strings representing the arguments.
+//
+//	args - A slice of strings representing the arguments.
+//
 // Returns:
-//   []string - A slice of strings containing subcommands and their values.
+//
+//	[]string - A slice of strings containing subcommands and their values.
 func splitSubCmd(args []string) []string {
 	subCmds := []string{}
 	for _, arg := range args {
@@ -91,12 +102,15 @@ func splitSubCmd(args []string) []string {
 
 // Init initializes the Action with the provided arguments.
 // Parameters:
-//   args - A slice of strings representing the arguments for initialization.
+//
+//	args - A slice of strings representing the arguments for initialization.
+//
 // Returns:
-//   error - An error if the initialization fails due to missing parameters.
+//
+//	error - An error if the initialization fails due to missing parameters.
 func (act *Action) Init(args []string) error {
-    act.follow = true
-    act.tag    = ""
+	act.follow = true
+	act.tag = ""
 	args = splitSubCmd(args)
 	if len(args)%2 > 0 {
 		return fmt.Errorf("Missing second parameter")
@@ -112,7 +126,12 @@ func (act *Action) Init(args []string) error {
 		case "tail":
 			act.tail = args[i+1]
 		case "follow":
-            act.follow = !(args[i+1] == "0" || args[i+1] == "no" || args[i+1] == "false")
+			act.follow = !(args[i+1] == "0" || args[i+1] == "no" || args[i+1] == "false")
+		case "focus":
+			act.focus = args[i+1]
+			if act.focus != "" {
+				cmdln.Focus = act.focus
+			}
 		}
 	}
 	return nil

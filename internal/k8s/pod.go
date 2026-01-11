@@ -160,6 +160,9 @@ func writeLogs(buffer *bufio.Reader, ch chan bool, tag string) {
 		if err == io.EOF {
 			break
 		}
-		fmt.Print(cmdln.SetLabels(line, tag))
+		text := cmdln.SetLabels(line, tag)
+		if text != "" {
+			fmt.Print(text)
+		}
 	}
 }

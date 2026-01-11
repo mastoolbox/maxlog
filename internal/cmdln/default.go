@@ -1,6 +1,9 @@
 package cmdln
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 const (
 	// MAS Manage
@@ -23,4 +26,18 @@ func GetEnv(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
+}
+
+// ContainsIgnoreCase checks if string `b` is a substring of string `a`, ignoring case.
+//
+// Parameters:
+//
+//	a - The string to search within.
+//	b - The substring to search for.
+//
+// Returns:
+//
+//	bool - true if `b` is a case-insensitive substring of `a`, otherwise false.
+func ContainsIgnoreCase(a, b string) bool {
+	return strings.Contains(strings.ToLower(a), strings.ToLower(b))
 }

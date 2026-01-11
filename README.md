@@ -45,6 +45,8 @@ maxlog logs --tag=mytag --tail=100
   Container name in Podman mode
 - `MAXLOG_USE_NERDFONT` - optional  
   With the values `1` or `true`, symbols can be activated via a NerdFont (see [Nerd Fonts](https://www.nerdfonts.com/)).  This option is disabled by default.
+- `MAXLOG_FOCUS` - optional  
+  It hides all lines that do not contain the word. It is not case-sensitive.
 
 ### Configuration file example
 
@@ -55,6 +57,20 @@ export MAXLOG_TAIL="100"
 export MAXLOG_K8S_NAMESPACE="mas-demo-manage"
 export MAXLOG_K8S_APPTYPE="all"
 export MAXLOG_USE_NERDFONT="true"
+```
+
+## Use
+After setting the mode and selector via environment variables, `maxlog` can be used without restrictions. See the section on environment variables for more information. Without Command, the logs command is used:
+```bash
+maxlog
+```
+Only debug information should be displayed and one tag highlighted:
+```bash
+maxlog logs focus=debug tag=ZZTEST
+```
+The flags tag and focus make the command logs unnecessary:
+```bash
+maxlog focus=debug tag=ZZTEST
 ```
 
 ## Building

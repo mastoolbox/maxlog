@@ -52,6 +52,7 @@ const SymWarn = 1
 
 var (
 	useNerdFont = UseNerdFont()
+	Focus       = GetFocus()
 
 	// Nerd Font Symbols
 	nfSymbols = map[int]string{
@@ -65,6 +66,15 @@ var (
 		1: Yellow + "[WARNING]" + Reset,
 	}
 )
+
+// GetFocus retrieves the value of the "MAXLOG_FOCUS" environment variable.
+//
+// Returns:
+//   string - The value of the "MAXLOG_FOCUS" environment variable, or an empty string if it is not set.
+
+func GetFocus() string {
+	return GetEnv("MAXLOG_FOCUS", "")
+}
 
 // UseNerdFont checks if Nerd Font symbols should be used.
 //
@@ -156,6 +166,12 @@ func SetLabels(text, tag string) string {
 		{"[DEBUG]", "DEBUG", SetCyanLabel},
 		{"[maximo.script." + tag + "]", "Script", SetLightBlueLabel},
 		{"Maximo is ready for client connections.", "Maximo is ready for client connections.", SetGreenLabel},
+	}
+
+	if Focus != "" {
+		if !ContainsIgnoreCase(text, Focus) {
+			return ""
+		}
 	}
 
 	for _, r := range replacements {

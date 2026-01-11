@@ -30,5 +30,5 @@ func ActionVersion() *Action {
 // Behavior:
 //   - Prints the current version of the application to the console.
 func runVersion(act *Action) {
-	fmt.Println("maxlog version: 0.0.3")
+	fmt.Println("maxlog version: 0.0.4")
 }

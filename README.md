@@ -55,7 +55,17 @@ export MAXLOG_TAIL="100"
 export MAXLOG_K8S_NAMESPACE="mas-demo-manage"
 export MAXLOG_K8S_APPTYPE="all"
 export MAXLOG_USE_NERDFONT="true"
-``` 
+```
+
+## Building
+In the Go programming language, the following command is generally executed within the cloned directory:
+```bash
+go build
+```
+This will provide an example of cross-compiling a release:
+```bash
+GOOS=darwin GOARCH=arm64 go build -ldflags "-s -w"
+```
 
 ## License
 

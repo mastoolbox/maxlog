@@ -1,5 +1,4 @@
 /*
-
 Copyright 2025 maxlog authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,28 +16,35 @@ limitations under the License.
 package main
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/maxtoolbox/maxlog/internal/actions"
 )
 
 func validateArgs(args []string) error {
-	if len(args) < 2{
-        args = append(args, "logs")
+	if len(args) < 2 {
+		args = append(args, "logs")
 	}
 
-    command := args[1]
+	command := args[1]
+	offset := 2
+	if strings.HasPrefix(command, "tag=") || strings.HasPrefix(command, "focus=") {
+		command = "logs"
+		offset = 1
+	}
 
 	cmds := []actions.ActionRunner{
 		actions.ActionLogs(),
-        actions.ActionInspect(),
-        actions.ActionVersion(),
-        actions.ActionHelp(),
+		actions.ActionInspect(),
+		actions.ActionVersion(),
+		actions.ActionHelp(),
 	}
 
 	for _, cmd := range cmds {
 		if cmd.GetName() == command {
-			cmd.Init(args[2:])
+			cmd.Init(args[offset:])
 			cmd.Run()
 			return nil
 		}
